@@ -114,11 +114,15 @@ USE_L10N = True
 
 USE_TZ = True
 
+CONSUMER_KEY = 'VWpcjpqveruxHB5yTLuYp3DLn'
+CONSUMER_SECRET = 'jUf9faigZYJm3W0BeygDks2C1bxWaIE6KT27sDDD9mgrQJFp6R'
+ACCESS_TOKEN = '1019268572453826560-3NykvgzIQuvn8NB0d21GlcijrBaimR'
+ACCESS_TOKEN_SECRET = '3Qg1wQNWai5WFj2xJflXXSwIizc3nicgGBo4Xywkq9flz'
 
-consumer_key = ''
-consumer_secret = ''
-access_token = ''
-access_token_secret = ''
+#consumer_key = ''
+#consumer_secret = ''
+#access_token = ''
+#access_token_secret = ''
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
