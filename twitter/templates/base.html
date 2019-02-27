@@ -1,9 +1,12 @@
 {% load staticfiles %}
+
 <html>
   <head>
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" />
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js"></script>
+    <script src="{% static 'js/chartkick.js' %}"></script>
   </head>
   <body>
     <div class="container">

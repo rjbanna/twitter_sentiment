@@ -1,12 +1,20 @@
 {% extends 'base.html' %}
+{% load chartkick %}
 {% block title %} Sentiment Results {% endblock %}
+
 
 {% block content %}
 
+{% pie_chart data with height='300px' %}
+
+
+<h4><b>Overall sentiment: </b></h4>{{d}}
 {% if data %}
-	<p>
-		{{ data }}
-		</p>
+		<p>
+			{{ data }}
+		</p><br />
 {% endif %}
+
+
 
 {% endblock %}

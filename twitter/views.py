@@ -9,8 +9,9 @@ from tweepy import OAuthHandler
 from textblob import TextBlob
 import simplejson
 import numpy as np
-from matplotlib import pylab
-
+import matplotlib.pyplot as plt
+import requests
+from collections import Counter
 # import unicodedata2
 # import urllib
 # import json
@@ -81,9 +82,7 @@ def sentiments(request):
         url = data['url']
         count = data['replies']
 
-        fetched_tweets = api.search(q ="@"+url)
-
-        # return render(request, 'sentiment.html', {'data': fetched_tweets })
+        fetched_tweets = api.search(q = url, count=count)
 
         emoji_pattern = re.compile("["u"\U0001F600-\U0001F64F"  # emoticons
             u"\U0001F300-\U0001F5FF"  # symbols & pictographs
@@ -91,13 +90,15 @@ def sentiments(request):
             u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
             "]+", flags=re.UNICODE)
 
+        tweet_replies = []
         for status in fetched_tweets:
-            parsed_tweet={}
+            tweet_replies.append((status._json).get('text'))
 
 
 
-            return render(request, 'sentiment.html', {'data': status._json })
-            txt = emoji_pattern.sub(r'',status.text)
+        for i in tweet_replies:
+            parsed_tweet = {}
+            txt = emoji_pattern.sub(r'',i)
             txt = txt.lower()
             txt = re.sub(r'(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?\S', '', txt)
             txt = re.sub(r'#','', txt)
@@ -113,15 +114,28 @@ def sentiments(request):
                 else:
                     tweets.append(parsed_tweet)
 
-        ptweets=[tweet for tweet in tweets if tweet['sentiment']=='positive']
-        ntweets=[tweet for tweet in tweets if tweet['sentiment']=='negative']
-        netweets=[tweet for tweet in tweets if tweet['sentiment']=='neutral']
+        sentiments_list = []
+        for i in tweets:
+            sentiments_list.append(i['sentiment'])
 
-        positive=(len(ptweets)/len(tweets))*100
-        negative=(len(ntweets)/len(tweets))*100
-        neutral=(len(netweets)/len(tweets))*100
+        sentiments_list_length = len(sentiments_list)
 
+        counts = Counter(sentiments_list)
+        positive = counts['positive']
+        neutral = counts['neutral']
+        negative = counts['negative']
 
-        return render(request, 'sentiment.html', {'data': negative })
+        positive_percent = round((positive*100)/sentiments_list_length, 2)
+        neutral_percent = round((neutral*100)/sentiments_list_length, 2)
+        negative_percent = round((negative*100)/sentiments_list_length, 2)
+
+        sentiment_dict = {'positive': positive_percent, 'neutral': neutral_percent, 'negative': negative_percent}
+
+        key_list = list(sentiment_dict.keys())
+        value_list = list(sentiment_dict.values())
+
+        overall_sentiment = key_list[value_list.index(sorted([positive_percent, neutral_percent, negative_percent])[-1])]
+
+        return render(request, 'sentiment.html', {'data': sentiment_dict, 'd': overall_sentiment })
     else:
         return redirect('/')
