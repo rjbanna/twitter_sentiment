@@ -1,2 +1,12 @@
 {% extends 'base.html' %}
 {% block title %} Sentiment Results {% endblock %}
+
+{% block content %}
+
+{% if data %}
+	<p>
+		{{ data }}
+		</p>
+{% endif %}
+
+{% endblock %}

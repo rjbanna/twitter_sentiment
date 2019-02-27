@@ -3,6 +3,11 @@
 
 {% block content %}
 
+{% if errors %}
+	<p>
+		{{ errors }}
+		</p>
+{% endif %}
 <body>
 	<div class="formdata">
 		<h1 align="center">Twitter Sentiment Analysis</h1>
