@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '42n=qm#_es+9l$%8p*$2j0zetrx1zo%2m_c1=27o%fv_m2#gny'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -115,18 +115,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-<<<<<<< HEAD
-
-CONSUMER_KEY = 'VWpcjpqveruxHB5yTLuYp3DLn'
-CONSUMER_SECRET = 'jUf9faigZYJm3W0BeygDks2C1bxWaIE6KT27sDDD9mgrQJFp6R'
-ACCESS_TOKEN = '1019268572453826560-3NykvgzIQuvn8NB0d21GlcijrBaimR'
-ACCESS_TOKEN_SECRET = '3Qg1wQNWai5WFj2xJflXXSwIizc3nicgGBo4Xywkq9flz'
-=======
 CONSUMER_KEY = ''
 CONSUMER_SECRET = ''
 ACCESS_TOKEN = ''
 ACCESS_TOKEN_SECRET = ''
->>>>>>> 2c86654d7b736bf6f498824958515a26354ef509
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
