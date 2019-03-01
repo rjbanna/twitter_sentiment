@@ -1,26 +1,14 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
 
-import sys
-import twitter
 import re
 import tweepy
+import requests
 from tweepy import OAuthHandler
 from textblob import TextBlob
-import simplejson
-import numpy as np
-import matplotlib.pyplot as plt
-import requests
 from collections import Counter
-# import unicodedata2
-# import urllib
-# import json
-# import nltk.classify.util
-# from nltk.classify import NaiveBayesClassifier
-# from nltk.corpus import names
-# from nltk.corpus import stopwords
 
-
+import validators
 # Create your views here.
 
 def home(request):
@@ -31,8 +19,7 @@ def checkForm(request):
     errors = []
     url = request.POST['url']
     reply = request.POST['replies']
-    return render(request, 'homepage.html', {'errors': url})
-    # return render(request, 'sentiment.html', {'d': request.POST})
+    return redirect('sentiments', url= url, reply=reply)
 
     if url == '':
         errors.append("Please enter URL")
@@ -41,7 +28,7 @@ def checkForm(request):
         errors.append("Please enter number of replies")
 
     if len(errors) == 0:
-        return render(request, 'homepage.html', {})
+        return redirect('sentiments')
     else:
         return redirect('/', errors)
         return render(request, 'homepage.html', {'errors': errors})
@@ -56,6 +43,7 @@ def twitterAuth():
         return api
     except:
         return False
+
 
 
 def clean_tweet(tweet):
@@ -74,6 +62,7 @@ def get_tweet_sentiment(tweet):
         return 'negative'
 
 
+
 def sentiments(request):
     if twitterAuth():
         tweets = []
@@ -82,60 +71,62 @@ def sentiments(request):
         url = data['url']
         count = data['replies']
 
-        fetched_tweets = api.search(q = url, count=count)
+        is_valid = validators.url(url)
 
-        emoji_pattern = re.compile("["u"\U0001F600-\U0001F64F"  # emoticons
-            u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-            u"\U0001F680-\U0001F6FF"  # transport & map symbols
-            u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-            "]+", flags=re.UNICODE)
+        if is_valid:
+            fetched_tweets = api.search(q = url, count=count)
 
-        tweet_replies = []
-        for status in fetched_tweets:
-            tweet_replies.append((status._json).get('text'))
+            emoji_pattern = re.compile("["u"\U0001F600-\U0001F64F" u"\U0001F300-\U0001F5FF" u"\U0001F680-\U0001F6FF" u"\U0001F1E0-\U0001F1FF" "]+", flags=re.UNICODE)
 
+            tweet_replies = []
+            for status in fetched_tweets:
+                tweet_replies.append((status._json).get('text'))
 
+            for reply in tweet_replies:
+                parsed_tweet = {}
+                txt = emoji_pattern.sub(r'',reply)
+                txt = txt.lower()
+                txt = re.sub(r'(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?\S', '', txt)
+                txt = re.sub(r'#','', txt)
+                txt = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"," ",txt).split())
 
-        for i in tweet_replies:
-            parsed_tweet = {}
-            txt = emoji_pattern.sub(r'',i)
-            txt = txt.lower()
-            txt = re.sub(r'(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?\S', '', txt)
-            txt = re.sub(r'#','', txt)
-            txt = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"," ",txt).split())
+                if txt!='' or txt==None:
+                    parsed_tweet['text']=txt
+                    parsed_tweet['sentiment'] = get_tweet_sentiment(txt)
 
-            if txt!='' or txt==None:
-                parsed_tweet['text']=txt
-                parsed_tweet['sentiment'] = get_tweet_sentiment(txt)
-
-                if len(tweets)>0:
-                    if parsed_tweet not in tweets:
+                    if len(tweets)>0:
+                        if parsed_tweet not in tweets:
+                            tweets.append(parsed_tweet)
+                    else:
                         tweets.append(parsed_tweet)
-                else:
-                    tweets.append(parsed_tweet)
 
-        sentiments_list = []
-        for i in tweets:
-            sentiments_list.append(i['sentiment'])
+            sentiments_list = []
+            for tweet in tweets:
+                sentiments_list.append(tweet['sentiment'])
 
-        sentiments_list_length = len(sentiments_list)
+            sentiments_list_length = len(sentiments_list)
 
-        counts = Counter(sentiments_list)
-        positive = counts['positive']
-        neutral = counts['neutral']
-        negative = counts['negative']
+            counts = Counter(sentiments_list)
+            positive = counts['positive']
+            neutral = counts['neutral']
+            negative = counts['negative']
 
-        positive_percent = round((positive*100)/sentiments_list_length, 2)
-        neutral_percent = round((neutral*100)/sentiments_list_length, 2)
-        negative_percent = round((negative*100)/sentiments_list_length, 2)
+            positive_percent = round((positive*100)/sentiments_list_length, 2)
+            neutral_percent = round((neutral*100)/sentiments_list_length, 2)
+            negative_percent = round((negative*100)/sentiments_list_length, 2)
 
-        sentiment_dict = {'positive': positive_percent, 'neutral': neutral_percent, 'negative': negative_percent}
+            sentiment_dict = {'Positive': positive_percent, 'Neutral': neutral_percent, 'Negative': negative_percent}
 
-        key_list = list(sentiment_dict.keys())
-        value_list = list(sentiment_dict.values())
+            key_list = list(sentiment_dict.keys())
+            value_list = list(sentiment_dict.values())
 
-        overall_sentiment = key_list[value_list.index(sorted([positive_percent, neutral_percent, negative_percent])[-1])]
+            overall_sentiment = key_list[value_list.index(sorted([positive_percent, neutral_percent, negative_percent])[-1])]
+            sentiment_percent = sentiment_dict[overall_sentiment]
 
-        return render(request, 'sentiment.html', {'data': sentiment_dict, 'd': overall_sentiment })
+            return render(request, 'sentiment.html', {'is_valid': is_valid, 'data': sentiment_dict, 'overall_sentiment': overall_sentiment.capitalize(), 'sentiment_percent':sentiment_percent })
+
+        else:
+            return render(request, 'sentiment.html', {'is_valid': is_valid })
+
     else:
         return redirect('/')

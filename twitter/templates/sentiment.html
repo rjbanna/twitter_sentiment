@@ -5,16 +5,16 @@
 
 {% block content %}
 
-{% pie_chart data with height='300px' %}
+{% if is_valid == True %}
+	<h2>Sentiment Results</h2>
+	{% pie_chart data with height='300px' %}
 
+	<h4><b>Overall Sentiment: </b></h4>{{ overall_sentiment }}
+	<h4><b>Sentiment Percent: </b></h4>{{ sentiment_percent }}
 
-<h4><b>Overall sentiment: </b></h4>{{d}}
-{% if data %}
-		<p>
-			{{ data }}
-		</p><br />
+{% else %}
+	<h4>Invalid URL</h4>
+
 {% endif %}
-
-
 
 {% endblock %}

@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-
+import chartkick
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+SECRET_KEY = '42n=qm#_es+9l$%8p*$2j0zetrx1zo%2m_c1=27o%fv_m2#gny'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'twitter.apps.TwitterConfig',
+    'chartkick',
 ]
 
 MIDDLEWARE = [
@@ -114,15 +115,11 @@ USE_L10N = True
 
 USE_TZ = True
 
+
 CONSUMER_KEY = 'VWpcjpqveruxHB5yTLuYp3DLn'
 CONSUMER_SECRET = 'jUf9faigZYJm3W0BeygDks2C1bxWaIE6KT27sDDD9mgrQJFp6R'
 ACCESS_TOKEN = '1019268572453826560-3NykvgzIQuvn8NB0d21GlcijrBaimR'
 ACCESS_TOKEN_SECRET = '3Qg1wQNWai5WFj2xJflXXSwIizc3nicgGBo4Xywkq9flz'
-
-#consumer_key = ''
-#consumer_secret = ''
-#access_token = ''
-#access_token_secret = ''
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -132,3 +129,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+STATICFILES_DIRS = (chartkick.js(),)
