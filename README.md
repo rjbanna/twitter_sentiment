@@ -5,4 +5,4 @@ Fill free to contribute. New changes are welcomed.
 
 <h2>SCREENSHOTS</h2>
 
-![alt text](https://prnt.sc/nislte)
+![alt text](screenshots/login.png)
